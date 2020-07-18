@@ -21,7 +21,7 @@ public:
         v8::Local<v8::Value> arg = info[0];
 
         if (arg->IsNumber()) {
-            ptr = new HLLWrap(arg->Uint32Value());
+            ptr = new HLLWrap(arg->Uint32Value(Nan::GetCurrentContext()).ToChecked());
         } else {
             const char *registers = node::Buffer::Data(info[0]);
             size_t size = node::Buffer::Length(info[0]);
@@ -70,7 +70,7 @@ private:
     }
 
     NAN_METHOD(merge) {
-        HLLWrap * src = Nan::ObjectWrap::Unwrap<HLLWrap>(info[0]->ToObject());
+        HLLWrap * src = Nan::ObjectWrap::Unwrap<HLLWrap>(info[0]->ToObject(Nan::GetCurrentContext()).ToLocalChecked());
         hll_merge(&hll, &src->hll);
     }
 
