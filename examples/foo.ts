@@ -1,10 +1,10 @@
-const HLL = require('../');
+import HLL from "../src";
 
 const hll = new HLL(5);
 
 // Add item to hll counter.
 hll.add('1');
-hll.add(new Buffer('2'));
+hll.add(Buffer.from('2'));
 
 console.log(hll.bits);
 console.log(hll.count());

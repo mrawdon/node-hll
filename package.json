@@ -2,8 +2,9 @@
   "name": "node-hll",
   "version": "0.2.0",
   "description": "A native HyperLogLog lib.",
-  "main": "index.js",
+  "main": "build-ts/index.js",
   "scripts": {
+    "postinstall": "tsc --sourceMap",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -19,7 +20,11 @@
     "url": "https://github.com/talrasha007/node-hll/issues"
   },
   "homepage": "https://github.com/talrasha007/node-hll#readme",
+  "devDependencies": {
+    "typescript": "^3.9.7"
+  },
   "dependencies": {
+    "@types/node": "^14.0.26",
     "nan": "^2.6.2",
     "nnu": "^0.1.7"
   }

@@ -1,18 +1,20 @@
-const HLL = require('./build/Release/node-hll.node').HLL;
+import HllBinding, { IHllBinding } from './bindings';
 
-module.exports = class {
-    constructor(arg) {
+export default class HLL{
+    private _bits:number;
+    private _hll: IHllBinding;
+    constructor(arg: Buffer | number) {
         if (Buffer.isBuffer(arg)) {
             const bits = Math.log2(arg.length);
             if (bits === Math.round(bits) && 4 <= bits && bits <= 20) {
                 this._bits = bits;
-                this._hll = new HLL(arg);
+                this._hll = new HllBinding(arg);
             } else {
                 throw new Error('[HLL ctor] Invalid args.');
             }
         } else if (4 <= arg && arg <= 20) {
             this._bits = arg;
-            this._hll = new HLL(arg);
+            this._hll = new HllBinding(arg);
         } else {
             throw new Error('[HLL ctor] Invalid args.');
         }
@@ -26,7 +28,7 @@ module.exports = class {
         return this._hll.toBuffer();
     }
 
-    add(item) {
+    add(item: string | Buffer) {
         if (typeof item === 'string' || Buffer.isBuffer(item)) {
             this._hll.add(item);
         } else {
@@ -43,8 +45,8 @@ module.exports = class {
     /*
      * In place merge.
      */
-    merge(hll) {
-        if (hll instanceof module.exports) {
+    merge(hll: HLL) {
+        if (hll instanceof HLL) {
             if (hll.bits !== this.bits) {
                 throw new Error('[HLL merge] Hlls should have same bits.');
             }
@@ -58,14 +60,14 @@ module.exports = class {
     }
 
     clone() {
-        const r = new module.exports(this.bits);
+        const r = new HLL(this.bits);
         return r.merge(this);
     }
 
     /*
      * Returns a new hll that is h1 u h2.
      */
-    static merge(h1, h2) {
+    static merge(h1: HLL, h2: HLL) {
         return h1.clone().merge(h2);
     }
 
@@ -76,7 +78,7 @@ module.exports = class {
      * the latter we can compute with tail.map { _ + A } using the HLLInstance +
      * since + on HLLInstance creates the instance for the union.
      */
-    static intersectionSize(hlls) {
+    static intersectionSize(hlls:HLL[]): number {
         if (hlls.length === 0) throw new Error('[HLL intersectionSize] Invalid args.');
         if (hlls.length === 1) return hlls[0].count();
 
@@ -84,8 +86,8 @@ module.exports = class {
         const tail = hlls.slice(1);
 
         const ret = head.count() +
-            module.exports.intersectionSize(tail) -
-            module.exports.intersectionSize(tail.map(h => h.clone().merge(head)));
+            HLL.intersectionSize(tail) -
+            HLL.intersectionSize(tail.map(h => h.clone().merge(head)));
 
         return Math.max(ret, 0);
     }
