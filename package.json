@@ -2,7 +2,7 @@
   "name": "node-hll",
   "version": "0.2.0",
   "description": "A native HyperLogLog lib.",
-  "main": "build-ts/index.js",
+  "main": "build/index.js",
   "scripts": {
     "postinstall": "tsc --sourceMap",
     "test": "echo \"Error: no test specified\" && exit 1"
